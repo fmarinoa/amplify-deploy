@@ -1,0 +1,61 @@
+name: 'Deploy to Amplify (AWS CLI)'
+description: 'Deploy a ZIP artifact to AWS Amplify using AWS CLI'
+inputs:
+  app-id:
+    description: 'Amplify application ID'
+    required: true
+  branch:
+    description: 'Branch name'
+    required: false
+    default: 'main'
+  zip-path:
+    description: 'Path to the .zip file to deploy'
+    required: true
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Create and Start Deployment
+      shell: bash
+      run: |
+        echo "Starting deployment for App: '${{ inputs.app-id }}' on Branch: '${{ inputs.branch }}'"
+
+        DEPLOYMENT=$(aws amplify create-deployment \
+          --app-id "${{ inputs.app-id }}" \
+          --branch-name "${{ inputs.branch }}" \
+          --query '{zipUploadUrl:zipUploadUrl,jobId:jobId}' \
+          --output json)
+
+        UPLOAD_URL=$(echo "$DEPLOYMENT" | jq -r '.zipUploadUrl')
+        JOB_ID=$(echo "$DEPLOYMENT" | jq -r '.jobId')
+
+        if [ -z "$UPLOAD_URL" ] || [ "$UPLOAD_URL" = "null" ]; then
+          echo "Error: Failed to extract a valid zipUploadUrl from deployment response." >&2
+          echo "Deployment response was: $DEPLOYMENT" >&2
+          exit 1
+        fi
+
+        if [ -z "$JOB_ID" ] || [ "$JOB_ID" = "null" ]; then
+          echo "Error: Failed to extract a valid jobId from deployment response." >&2
+          echo "Deployment response was: $DEPLOYMENT" >&2
+          exit 1
+        fi
+
+        echo "Uploading artifact..."
+        curl -X PUT "$UPLOAD_URL" \
+          --data-binary @"${{ inputs.zip-path }}" \
+          -H "Content-Type: application/zip" \
+          --silent \
+          --show-error
+
+        echo "Activating Job ID: $JOB_ID"
+        aws amplify start-deployment \
+          --app-id "${{ inputs.app-id }}" \
+          --branch-name "${{ inputs.branch }}" \
+          --job-id "$JOB_ID"
+
+        echo "Deployment started successfully for Job ID: $JOB_ID"
+
+branding:
+  icon: 'upload-cloud'
+  color: 'orange'
