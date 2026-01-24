@@ -29,7 +29,7 @@ steps:
 
   # 3. Deploy
   - name: Deploy to Amplify
-    uses: your-username/amplify-deploy-action@v1
+    uses: fmarinoa/amplify-deploy@v1
     with:
       app-id: ${{ secrets.AMPLIFY_APP_ID }}
       branch: 'main'
