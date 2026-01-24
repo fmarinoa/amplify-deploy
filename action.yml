@@ -17,44 +17,11 @@ runs:
   steps:
     - name: Create and Start Deployment
       shell: bash
-      run: |
-        echo "Starting deployment for App: '${{ inputs.app-id }}' on Branch: '${{ inputs.branch }}'"
-
-        DEPLOYMENT=$(aws amplify create-deployment \
-          --app-id "${{ inputs.app-id }}" \
-          --branch-name "${{ inputs.branch }}" \
-          --query '{zipUploadUrl:zipUploadUrl,jobId:jobId}' \
-          --output json)
-
-        UPLOAD_URL=$(echo "$DEPLOYMENT" | jq -r '.zipUploadUrl')
-        JOB_ID=$(echo "$DEPLOYMENT" | jq -r '.jobId')
-
-        if [ -z "$UPLOAD_URL" ] || [ "$UPLOAD_URL" = "null" ]; then
-          echo "Error: Failed to extract a valid zipUploadUrl from deployment response." >&2
-          echo "Deployment response was: $DEPLOYMENT" >&2
-          exit 1
-        fi
-
-        if [ -z "$JOB_ID" ] || [ "$JOB_ID" = "null" ]; then
-          echo "Error: Failed to extract a valid jobId from deployment response." >&2
-          echo "Deployment response was: $DEPLOYMENT" >&2
-          exit 1
-        fi
-
-        echo "Uploading artifact..."
-        curl -X PUT "$UPLOAD_URL" \
-          --data-binary @"${{ inputs.zip-path }}" \
-          -H "Content-Type: application/zip" \
-          --silent \
-          --show-error
-
-        echo "Activating Job ID: $JOB_ID"
-        aws amplify start-deployment \
-          --app-id "${{ inputs.app-id }}" \
-          --branch-name "${{ inputs.branch }}" \
-          --job-id "$JOB_ID"
-
-        echo "Deployment started successfully for Job ID: $JOB_ID"
+      env:
+        INPUT_APP_ID: ${{ inputs.app-id }}
+        INPUT_BRANCH: ${{ inputs.branch }}
+        INPUT_ZIP_PATH: ${{ inputs.zip-path }}
+      run: bash ${{ github.action_path }}/deploy.sh
 
 branding:
   icon: 'upload-cloud'
