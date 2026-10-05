@@ -1,5 +1,5 @@
-name: 'Deploy to Amplify (AWS CLI)'
-description: 'Deploy a ZIP artifact to AWS Amplify using AWS CLI'
+name: 'Deploy to Amplify'
+description: 'Deploy a ZIP artifact to AWS Amplify using the AWS SDK'
 inputs:
   app-id:
     description: 'Amplify application ID'
@@ -11,17 +11,13 @@ inputs:
   zip-path:
     description: 'Path to the .zip file to deploy'
     required: true
+outputs:
+  job-id:
+    description: 'Amplify deployment job ID'
 
 runs:
-  using: 'composite'
-  steps:
-    - name: Create and Start Deployment
-      shell: bash
-      env:
-        INPUT_APP_ID: ${{ inputs.app-id }}
-        INPUT_BRANCH: ${{ inputs.branch }}
-        INPUT_ZIP_PATH: ${{ inputs.zip-path }}
-      run: bash ${{ github.action_path }}/deploy.sh
+  using: 'node24'
+  main: 'dist/index.js'
 
 branding:
   icon: 'upload-cloud'

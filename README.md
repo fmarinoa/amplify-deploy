@@ -2,7 +2,7 @@
 
 [Español](README.es.md) | English
 
-Composite GitHub Action to deploy static artifacts (.zip) directly to AWS Amplify using AWS CLI, without the need to manage an intermediate S3 bucket.
+JavaScript GitHub Action to deploy static artifacts (.zip) directly to AWS Amplify using the AWS SDK, without the need to manage an intermediate S3 bucket.
 
 ## Prerequisites
 
@@ -29,7 +29,7 @@ steps:
 
   # 3. Deploy
   - name: Deploy to Amplify
-    uses: fmarinoa/amplify-deploy@v1
+    uses: fmarinoa/amplify-deploy@v2
     with:
       app-id: ${{ secrets.AMPLIFY_APP_ID }}
       branch: 'main'
@@ -43,6 +43,12 @@ steps:
 | app-id   | The Amplify App ID (visible in the AWS console).      |   Yes    |    -    |
 | zip-path | Relative or absolute path to the .zip file to deploy. |   Yes    |    -    |
 | branch   | Name of the Amplify branch where it will be deployed. |    No    |  main   |
+
+## Outputs
+
+| Output |        Description         |
+| ------ | :------------------------: |
+| job-id | Amplify deployment job ID. |
 
 ## Minimum IAM Policy
 

@@ -1,0 +1,17 @@
+{
+  "name": "amplify-deploy",
+  "version": "2.0.0",
+  "private": true,
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "ncc build src/index.js -o dist --minify --license licenses.txt"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@aws-sdk/client-amplify": "^3.1146.0"
+  },
+  "devDependencies": {
+    "@vercel/ncc": "^0.45.0"
+  },
+  "type": "module"
+}
