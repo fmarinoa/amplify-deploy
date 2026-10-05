@@ -2,7 +2,7 @@
 
 Español | [English](README.md)
 
-GitHub Action compuesta para desplegar artefactos estáticos (.zip) directamente a AWS Amplify utilizando AWS CLI, sin necesidad de gestionar un bucket S3 intermedio.
+GitHub Action en JavaScript para desplegar artefactos estáticos (.zip) directamente a AWS Amplify utilizando el AWS SDK, sin necesidad de gestionar un bucket S3 intermedio.
 
 ## Prerrequisitos
 
@@ -29,7 +29,7 @@ steps:
 
   # 3. Desplegar
   - name: Deploy to Amplify
-    uses: fmarinoa/amplify-deploy@v1
+    uses: fmarinoa/amplify-deploy@v2
     with:
       app-id: ${{ secrets.AMPLIFY_APP_ID }}
       branch: 'main'
@@ -43,6 +43,12 @@ steps:
 | app-id   | El App ID de Amplify (visible en la consola AWS).     |    Sí     |    -    |
 | zip-path | Ruta relativa o absoluta al archivo .zip a desplegar. |    Sí     |    -    |
 | branch   | Nombre de la rama en Amplify donde se desplegará.     |    No     |  main   |
+
+## Outputs
+
+| Output |          Descripción           |
+| ------ | :----------------------------: |
+| job-id | Job ID del deployment Amplify. |
 
 ## Política IAM Mínima
 
